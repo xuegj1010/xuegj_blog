@@ -7,6 +7,9 @@ name = "pypi"
 flask = "*"
 flask-script = "*"
 flask-sqlalchemy = "*"
+pymysql = "*"
+flask-migrate = "*"
+flask-wtf = "*"
 
 [dev-packages]
 

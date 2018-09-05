@@ -93,3 +93,4 @@ database/
 media/
 .idea/
 *.sqlite3
+migrations/
