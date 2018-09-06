@@ -15,9 +15,9 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', [DataRequired()])
 
     def validate(self):
-        check_validata = super(LoginForm, self).validate()
+        check_validate = super(LoginForm, self).validate()
 
-        if not check_validata:
+        if not check_validate:
             return False
 
         user = User.query.filter_by(username=self.username.data).first()
@@ -35,7 +35,7 @@ class RegisterForm(FlaskForm):
     username = StringField('Username', [DataRequired(), Length(max=255)])
     password = PasswordField('Password', [DataRequired(), Length(min=8)])
     comfirm = PasswordField('Confirm Password', [DataRequired(), EqualTo('password')])
-    recaptcha = RecaptchaField()
+    # recaptcha = RecaptchaField()
 
     def validate(self):
         check_validate = super(RegisterForm, self).validate()

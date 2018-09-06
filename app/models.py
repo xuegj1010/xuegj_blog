@@ -20,7 +20,8 @@ class User(db.Model):
     def __repr__(self):
         return f"<Model User `{self.username}`>"
 
-    def set_password(self, password):
+    @staticmethod
+    def set_password(password):
         return bcrypt.generate_password_hash(password)
 
     def check_password(self, password):
