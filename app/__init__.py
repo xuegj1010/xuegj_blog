@@ -1,22 +1,20 @@
-from flask import Flask, redirect, url_for
+from flask import Flask
 
-from app.controllers import blog_blueprint
-from app.controllers.blog import home
+from app.extensions import bcrypt
+from .controllers import blog_blueprint, main_blueprint
+from .controllers.blog import home
 from .models import db
-from .config import DevConfig
 
 
 def create_app(object_name):
     app = Flask(__name__)
 
-    app.config.from_object(DevConfig)
+    app.config.from_object(object_name)
 
     db.init_app(app)
-
-    # @app.route('/')
-    # def index():
-    #     return redirect(url_for(home))
+    bcrypt.init_app(app)
 
     app.register_blueprint(blog_blueprint)
+    app.register_blueprint(main_blueprint)
 
     return app

@@ -10,3 +10,11 @@ blog_blueprint = Blueprint(
 )
 
 from app.controllers import blog
+
+
+main_blueprint = Blueprint(
+    'main',
+    __name__,
+    template_folder=path.join(path.pardir, 'templates', 'main'))
+
+from app.controllers import main

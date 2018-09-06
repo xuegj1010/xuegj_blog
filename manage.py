@@ -7,7 +7,7 @@ from app import create_app
 from app.models import db, User, Post, Comment, Tag
 
 env = os.environ.get('BLOG_ENV', 'dev')
-app = create_app(f'config.{env.capitalize}config')
+app = create_app(f'app.config.{env.capitalize()}Config')
 
 manger = Manager(app)
 migrate = Migrate(app, db)
