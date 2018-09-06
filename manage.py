@@ -1,11 +1,17 @@
-from main import app
-from models import db, User, Post, Comment, Tag
+import os
 
 from flask_script import Manager, Server
 from flask_migrate import Migrate, MigrateCommand
 
+from app import create_app
+from app.models import db, User, Post, Comment, Tag
+
+env = os.environ.get('BLOG_ENV', 'dev')
+app = create_app(f'config.{env.capitalize}config')
+
 manger = Manager(app)
 migrate = Migrate(app, db)
+
 manger.add_command('server', Server())
 manger.add_command('db', MigrateCommand)
 
@@ -18,7 +24,8 @@ def make_shell_context():
         User=User,
         Post=Post,
         Comment=Comment,
-        Tag=Tag
+        Tag=Tag,
+        Server=Server
     )
 
 
