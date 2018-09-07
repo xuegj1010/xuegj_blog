@@ -2,6 +2,7 @@ import datetime
 from uuid import uuid4
 
 from flask import render_template, redirect, url_for
+from flask_login import login_required
 from sqlalchemy import func, desc
 
 from . import blog_blueprint
@@ -25,6 +26,7 @@ def sidebar_data():
 
 @blog_blueprint.route('/')
 @blog_blueprint.route('/<int:page>')
+@login_required
 def home(page=1):
     posts = Post.query.order_by(
         Post.publish_date.desc()
@@ -39,6 +41,7 @@ def home(page=1):
 
 
 @blog_blueprint.route('/post/<string:post_id>', methods=('GET', 'POST'))
+@login_required
 def post(post_id):
     form = CommentForm()
 
@@ -66,6 +69,7 @@ def post(post_id):
 
 
 @blog_blueprint.route('/tag/<string:tag_name>')
+@login_required
 def tag(tag_name):
     tag = db.session.query(Tag).filter_by(name=tag_name).first_or_404()
     posts = tag.posts.order_by(Post.publish_date.desc()).all()
@@ -92,6 +96,7 @@ def user(username):
 
 
 @blog_blueprint.route('/new', methods=['GET', 'POST'])
+@login_required
 def new_post():
     form = PostForm()
 
@@ -109,6 +114,7 @@ def new_post():
 
 
 @blog_blueprint.route('/edit/<string:id>', methods=['GET', 'POST'])
+@login_required
 def edit_post(id):
     post = Post.query.get_or_404(id)
     form = PostForm()

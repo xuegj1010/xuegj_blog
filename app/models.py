@@ -1,3 +1,4 @@
+from flask_login import AnonymousUserMixin
 from flask_sqlalchemy import SQLAlchemy
 from .extensions import bcrypt
 
@@ -15,7 +16,7 @@ class User(db.Model):
     def __init__(self, id, username, password):
         self.id = id
         self.username = username
-        self.password = password
+        self.password = self.set_password(password)
 
     def __repr__(self):
         return f"<Model User `{self.username}`>"
@@ -26,6 +27,24 @@ class User(db.Model):
 
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
+
+    def is_authenticated(self):
+        if isinstance(self, AnonymousUserMixin):
+            return False
+        else:
+            return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        if isinstance(self, AnonymousUserMixin):
+            return True
+        else:
+            return False
+
+    def get_id(self):
+        return self.id
 
 
 posts_tags = db.Table(

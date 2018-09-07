@@ -2,6 +2,7 @@ from os import path
 from uuid import uuid4
 
 from flask import flash, url_for, redirect, render_template, request, session
+from flask_login import login_user, logout_user
 
 from app.controllers import main_blueprint
 from app.extensions import facebook
@@ -19,6 +20,9 @@ def login():
     form = LoginForm()
 
     if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).one()
+        login_user(user, remember=form.remember.data)
+
         flash('You have been logged in.', category='success')
         return redirect(url_for('blog.home'))
     return render_template('login.html', form=form)
@@ -26,6 +30,7 @@ def login():
 
 @main_blueprint.route('/logout', methods=['GET', 'POST'])
 def logout():
+    logout_user()
     flash('You have been logged out.', category='success')
     return redirect(url_for('blog.home'))
 
@@ -35,7 +40,7 @@ def register():
     form = RegisterForm()
 
     if form.validate_on_submit():
-        new_user = User(id=str(uuid4()), username=form.username.data, password=User.set_password(form.password.data))
+        new_user = User(id=str(uuid4()), username=form.username.data, password=form.password.data)
         db.session.add(new_user)
         db.session.commit()
 
