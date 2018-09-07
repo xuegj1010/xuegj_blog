@@ -4,6 +4,12 @@ from .extensions import bcrypt
 
 db = SQLAlchemy()
 
+users_roles = db.Table(
+    'users_roles',
+    db.Column('user_id', db.String(45), db.ForeignKey('users.id')),
+    db.Column('role_id', db.String(45), db.ForeignKey('roles.id'))
+)
+
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -12,11 +18,15 @@ class User(db.Model):
     password = db.Column(db.String(255))
 
     posts = db.relationship('Post', backref='users', lazy='dynamic')
+    roles = db.relationship('Role', secondary=users_roles, backref=db.backref('users', lazy='dynamic'))
 
     def __init__(self, id, username, password):
         self.id = id
         self.username = username
         self.password = self.set_password(password)
+
+        default = Role.query.filter_by(name='default').one()
+        self.roles.append(default)
 
     def __repr__(self):
         return f"<Model User `{self.username}`>"
@@ -45,6 +55,21 @@ class User(db.Model):
 
     def get_id(self):
         return self.id
+
+
+class Role(db.Model):
+    __tablename__ = 'roles'
+
+    id = db.Column(db.String(45), primary_key=True)
+    name = db.Column(db.String(255), unique=True)
+    description = db.Column(db.String(255))
+
+    def __init__(self, id, name):
+        self.id = id
+        self.name = name
+
+    def __repr__(self):
+        return f'<Model Role `{self.name}`'
 
 
 posts_tags = db.Table(

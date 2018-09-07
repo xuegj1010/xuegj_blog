@@ -1,8 +1,9 @@
 from os import path
 from uuid import uuid4
 
-from flask import flash, url_for, redirect, render_template, request, session
+from flask import flash, url_for, redirect, render_template, request, session, current_app
 from flask_login import login_user, logout_user
+from flask_principal import identity_changed, Identity, AnonymousIdentity
 
 from app.controllers import main_blueprint
 from app.extensions import facebook
@@ -23,6 +24,11 @@ def login():
         user = User.query.filter_by(username=form.username.data).one()
         login_user(user, remember=form.remember.data)
 
+        identity_changed.send(
+            current_app._get_current_object(),
+            identity=Identity(user.id)
+        )
+
         flash('You have been logged in.', category='success')
         return redirect(url_for('blog.home'))
     return render_template('login.html', form=form)
@@ -31,6 +37,11 @@ def login():
 @main_blueprint.route('/logout', methods=['GET', 'POST'])
 def logout():
     logout_user()
+
+    identity_changed.send(
+        current_app._get_current_object(),
+        identity=AnonymousIdentity()
+    )
     flash('You have been logged out.', category='success')
     return redirect(url_for('blog.home'))
 

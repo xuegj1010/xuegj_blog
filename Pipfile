@@ -11,6 +11,7 @@ pymysql = "*"
 flask-migrate = "*"
 flask-wtf = "*"
 flask-bcrypt = "*"
+flask-principal = "*"
 
 [dev-packages]
 

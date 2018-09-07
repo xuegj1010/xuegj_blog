@@ -1,10 +1,12 @@
 import datetime
 from uuid import uuid4
 
-from flask import render_template, redirect, url_for
-from flask_login import login_required
+from flask import render_template, redirect, url_for, abort
+from flask_login import login_required, current_user
+from flask_principal import UserNeed, Permission
 from sqlalchemy import func, desc
 
+from app.extensions import poster_permission, admin_permission, default_permission
 from . import blog_blueprint
 from app.forms import CommentForm, PostForm
 from app.models import db, User, Post, Tag, Comment, posts_tags
@@ -113,22 +115,35 @@ def new_post():
                            form=form)
 
 
-@blog_blueprint.route('/edit/<string:id>', methods=['GET', 'POST'])
+@blog_blueprint.route('/edit/<string:post_id>', methods=['GET', 'POST'])
 @login_required
-def edit_post(id):
-    post = Post.query.get_or_404(id)
-    form = PostForm()
+# @poster_permission.require(http_exception=403)
+@default_permission.require(http_exception=403)
+def edit_post(post_id):
+    post = Post.query.get_or_404(post_id)
 
-    if form.validate_on_submit():
-        post.title = form.title.data
-        post.text = form.text.data
-        post.publish_date = datetime.datetime.now()
+    if not current_user:
+        return redirect(url_for('main.login'))
+    if current_user != post.users:
+        return redirect(url_for('blog.post', post_id=post_id))
 
-        # Update the post
-        db.session.add(post)
-        db.session.commit()
-        return redirect(url_for('blog.post', post_id=post.id))
+    permission = Permission(UserNeed(post.users.id))
+    if permission.can() or admin_permission.can():
 
-    form.title.data = post.title
-    form.text.data = post.text
-    return render_template('edit_post.html', form=form, post=post)
+        form = PostForm()
+
+        if form.validate_on_submit():
+            post.title = form.title.data
+            post.text = form.text.data
+            post.publish_date = datetime.datetime.now()
+
+            # Update the post
+            db.session.add(post)
+            db.session.commit()
+            return redirect(url_for('blog.post', post_id=post.id))
+        else:
+            abort(403)
+
+        form.title.data = post.title
+        form.text.data = post.text
+        return render_template('edit_post.html', form=form, post=post)
