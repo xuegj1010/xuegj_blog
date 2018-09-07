@@ -12,6 +12,11 @@ flask-migrate = "*"
 flask-wtf = "*"
 flask-bcrypt = "*"
 flask-principal = "*"
+flask-celery-helper = "*"
+flask-cache = "*"
+flask-assets = "*"
+cssmin = "*"
+jsmin = "*"
 
 [dev-packages]
 

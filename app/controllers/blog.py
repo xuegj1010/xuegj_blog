@@ -1,17 +1,18 @@
 import datetime
 from uuid import uuid4
 
-from flask import render_template, redirect, url_for, abort
+from flask import render_template, redirect, url_for, abort, request
 from flask_login import login_required, current_user
 from flask_principal import UserNeed, Permission
 from sqlalchemy import func, desc
 
-from app.extensions import poster_permission, admin_permission, default_permission
+from app.extensions import poster_permission, admin_permission, default_permission, cache
 from . import blog_blueprint
 from app.forms import CommentForm, PostForm
 from app.models import db, User, Post, Tag, Comment, posts_tags
 
 
+@cache.cached(timeout=7200, key_prefix='sidebar_data')
 def sidebar_data():
     recent = db.session.query(Post).order_by(
         Post.publish_date.desc()
@@ -28,7 +29,7 @@ def sidebar_data():
 
 @blog_blueprint.route('/')
 @blog_blueprint.route('/<int:page>')
-@login_required
+@cache.cached(timeout=60)
 def home(page=1):
     posts = Post.query.order_by(
         Post.publish_date.desc()
@@ -42,8 +43,14 @@ def home(page=1):
                            top_tags=top_tags)
 
 
+def make_cache_key(*args, **kwargs):
+    path = request.path
+    args = str(hash(frozenset(request.args.items())))
+    return (path + args).encode('utf-8')
+
+
 @blog_blueprint.route('/post/<string:post_id>', methods=('GET', 'POST'))
-@login_required
+@cache.cached(timeout=60, key_prefix=make_cache_key)
 def post(post_id):
     form = CommentForm()
 
@@ -117,8 +124,7 @@ def new_post():
 
 @blog_blueprint.route('/edit/<string:post_id>', methods=['GET', 'POST'])
 @login_required
-# @poster_permission.require(http_exception=403)
-@default_permission.require(http_exception=403)
+@poster_permission.require(http_exception=403)
 def edit_post(post_id):
     post = Post.query.get_or_404(post_id)
 

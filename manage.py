@@ -1,9 +1,10 @@
 import os
 
+from flask_assets import ManageAssets
 from flask_script import Manager, Server
 from flask_migrate import Migrate, MigrateCommand
 
-from app import create_app
+from app import create_app, asset_env
 from app.models import db, User, Post, Comment, Tag, Role
 
 env = os.environ.get('BLOG_ENV', 'dev')
@@ -14,6 +15,7 @@ migrate = Migrate(app, db)
 
 manger.add_command('server', Server())
 manger.add_command('db', MigrateCommand)
+manger.add_command('assets', ManageAssets(asset_env))
 
 
 @manger.shell

@@ -13,3 +13,5 @@ class DevConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:xgj891010@127.0.0.1:3306/xuegj_blog'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENCODING = "utf-8"
+    CACHE_TYPE = 'simple'
+    ASSETS_DEBUG = True

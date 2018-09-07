@@ -3,11 +3,31 @@ from flask_bcrypt import Bcrypt
 from flask_oauthlib.client import OAuth
 from flask_login import LoginManager
 from flask_principal import Principal, Permission, RoleNeed
+from flask_cache import Cache
+from flask_assets import Environment, Bundle
 
 bcrypt = Bcrypt()
 oauth = OAuth()
 login_manager = LoginManager()
 principals = Principal()
+cache = Cache()
+asset_env = Environment()
+
+main_css = Bundle(
+    'css/bootstrap.css',
+    'css/bootstrap.min.css',
+    'css/bootstrap-theme.css',
+    filters='cssmin',
+    output='assets/css/common.css'
+)
+
+main_js = Bundle(
+    'js/bootstrap.js',
+    'js/bootstrap.min.js',
+    'js/jquery.min.js',
+    filters='jsmin',
+    output='assets/js/common.js'
+)
 
 facebook = oauth.remote_app(
     'facebook',

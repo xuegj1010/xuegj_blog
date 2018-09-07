@@ -1,6 +1,9 @@
 from flask_login import AnonymousUserMixin
 from flask_sqlalchemy import SQLAlchemy
-from .extensions import bcrypt
+from flask_principal import current_app
+from itsdangerous import Serializer, SignatureExpired, BadSignature
+
+from .extensions import bcrypt, cache
 
 db = SQLAlchemy()
 
@@ -55,6 +58,20 @@ class User(db.Model):
 
     def get_id(self):
         return self.id
+
+    @staticmethod
+    @cache.memoize(60)
+    def verify_auth_token(token):
+        serializer = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = serializer.loads(token)
+        except SignatureExpired:
+            return None
+        except BadSignature:
+            return None
+
+        user = User.query.filter_by(id=data['id']).first()
+        return user
 
 
 class Role(db.Model):
