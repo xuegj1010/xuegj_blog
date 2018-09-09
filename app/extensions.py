@@ -5,6 +5,7 @@ from flask_login import LoginManager
 from flask_principal import Principal, Permission, RoleNeed
 from flask_cache import Cache
 from flask_assets import Environment, Bundle
+from flask_admin import Admin
 
 bcrypt = Bcrypt()
 oauth = OAuth()
@@ -12,6 +13,7 @@ login_manager = LoginManager()
 principals = Principal()
 cache = Cache()
 asset_env = Environment()
+admin = Admin()
 
 main_css = Bundle(
     'css/bootstrap.css',

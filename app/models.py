@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from flask_login import AnonymousUserMixin
 from flask_sqlalchemy import SQLAlchemy
 from flask_principal import current_app
@@ -138,9 +140,8 @@ class Tag(db.Model):
     id = db.Column(db.String(45), primary_key=True)
     name = db.Column(db.String(255))
 
-    def __init__(self, id, name):
-        self.id = id
-        self.name = name
+    def __init__(self):
+        self.id = str(uuid4())
 
     def __repr__(self):
         return f"<Model Tag `{self.name}`>"

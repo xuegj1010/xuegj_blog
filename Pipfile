@@ -17,6 +17,7 @@ flask-cache = "*"
 flask-assets = "*"
 cssmin = "*"
 jsmin = "*"
+flask-admin = "*"
 
 [dev-packages]
 
