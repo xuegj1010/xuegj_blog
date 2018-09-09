@@ -1,6 +1,8 @@
 from flask_admin import BaseView, expose
 from flask_admin.contrib.sqla import ModelView
 
+from app.forms import CKTextAreaField
+
 
 class CustomView(BaseView):
     @expose('/')
@@ -14,3 +16,11 @@ class CustomView(BaseView):
 
 class CustomModelView(ModelView):
     pass
+
+
+class PostView(CustomModelView):
+    form_overrides = dict(text=CKTextAreaField)
+    column_searchable_list = ('text', 'title')
+    column_filters = ('publish_date',)
+    create_template = 'admin/post_edit.html'
+    edit_template = 'admin/post_edit.html'

@@ -145,3 +145,37 @@ class Tag(db.Model):
 
     def __repr__(self):
         return f"<Model Tag `{self.name}`>"
+
+
+class BrowseVolume(db.Model):
+    """Represents Proected browse_volumes."""
+
+    __tablename__ = 'browse_volumes'
+    id = db.Column(db.String(45), primary_key=True)
+    home_view_total = db.Column(db.Integer)
+
+    def __init__(self):
+        self.id = str(uuid4())
+        self.home_view_total = 0
+
+    def __repr__(self):
+        return f'<Model BrowseVolume `{self.home_view_total}`>'
+
+    def add_one(self):
+        self.home_view_total += 1
+
+
+class Reminder(db.Model):
+    """Represents Proected reminders."""
+
+    __tablename__ = 'reminders'
+    id = db.Column(db.String(45), primary_key=True)
+    date = db.Column(db.DateTime())
+    email = db.Column(db.String(255))
+    text = db.Column(db.Text())
+
+    def __init__(self):
+        self.id = str(uuid4())
+
+    def __repr__(self):
+        return f'<Model Reminder `{self.text[:20]}`>'
